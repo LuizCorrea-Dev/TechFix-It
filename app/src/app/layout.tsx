@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Urbanist } from 'next/font/google';
 import './globals.css';
 import Providers from '@/components/Providers';
+import Script from 'next/script';
 
 const urbanist = Urbanist({
   subsets: ['latin'],
@@ -23,6 +24,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${urbanist.variable}`}>
+        {/* Google Analytics */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-W6GH7E23MS"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+        >
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-W6GH7E23MS');
+          `}
+        </Script>
+        
         <Providers>{children}</Providers>
       </body>
     </html>
