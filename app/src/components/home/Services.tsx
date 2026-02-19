@@ -20,7 +20,7 @@ export default async function Services() {
             return (
             <Link key={service.id || index} href={`/services/${service.slug}`} className={styles.cardLink}>
                 <div className={styles.card}>
-                  <div className={styles.cardImage} style={{ backgroundImage: `url(${bgImage})` }} />
+                  <div className={styles.cardImage} style={{ backgroundImage: `url('${bgImage}')` }} />
                   {/* Icon removed in favor of always showing image as requested */}
                 {service.isExclusive && <span className={styles.badge}>EXCLUSIVE</span>}
                 <h3 className={styles.title}>{service.title}</h3>

@@ -46,7 +46,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <div 
               className={styles.imagePlaceholder} 
               style={{ 
-                backgroundImage: `url(${bgImage})`, 
+                backgroundImage: `url('${bgImage}')`, 
                 backgroundSize: 'cover', 
                 backgroundPosition: 'center' 
               }}
