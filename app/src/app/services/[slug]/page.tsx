@@ -25,32 +25,15 @@ export async function generateStaticParams() {
 
 export default async function ServicePage({ params }: ServicePageProps) {
   const { slug } = await params;
-  const services = await getServices(); // Optimization: could make getServiceBySlug
-  const service = services.find((s : any) => s.slug === slug);
+  const service = (await getServices()).find((s : any) => s.slug === slug);
 
   if (!service) {
     notFound();
   }
 
-  // Validate if local image exists
-  let bgImage = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop';
+  // Use DB image if available, otherwise fallback
+  const bgImage = service.imageUrl || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop';
   
-  if (service.imageUrl) {
-      if (service.imageUrl.startsWith('http')) {
-          bgImage = service.imageUrl;
-      } else {
-          const relativePath = service.imageUrl.startsWith('/') ? service.imageUrl.slice(1) : service.imageUrl;
-          const absolutePath = path.join(process.cwd(), 'public', relativePath);
-          try {
-              if (fs.existsSync(absolutePath)) {
-                  bgImage = service.imageUrl;
-              }
-          } catch (e) {
-              // ignore
-          }
-      }
-  }
-
   return (
     <main>
       <Header />
@@ -89,15 +72,16 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <div className={styles.sidebarBox}>
               <h3 className={styles.sidebarTitle}>Our Services</h3>
               <ul className={styles.serviceList}>
-                {services.map((s : any) => (
-                    <li key={s.id}>
-                        <Link 
-                            href={`/services/${s.slug}`} 
-                            className={`${styles.serviceLink} ${s.slug === slug ? styles.active : ''}`}
-                        >
-                            {s.title} <ArrowRight size={16} />
-                        </Link>
-                    </li>
+                {(await getServices()).map((s : any) => (
+                  <li key={s.id}>
+                    <Link 
+                      href={`/services/${s.slug}`}
+                      className={`${styles.serviceLink} ${s.slug === slug ? styles.active : ''}`}
+                    >
+                      {s.title}
+                      <ArrowRight size={16} />
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </div>
