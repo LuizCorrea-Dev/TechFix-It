@@ -6,7 +6,6 @@ import * as Icons from 'lucide-react';
 
 export default async function Services() {
   const services = await getServices();
-  console.log(services);
 
   return (
     <section className={styles.services}>
@@ -14,7 +13,7 @@ export default async function Services() {
         <div className={styles.grid}>
           {services.map((service : any, index : number) => {
             const IconComponent = (Icons as any)[service.icon] || Icons.HelpCircle;
-            
+
             // Use DB image if available, otherwise fallback
             const bgImage = service.imageUrl || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop';
 
