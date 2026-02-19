@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import styles from './page.module.css';
-import fs from 'fs';
-import path from 'path';
+import { Metadata } from 'next';
 
 interface ServicePageProps {
   params: Promise<{ slug: string }>;
@@ -23,6 +22,32 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const service = (await getServices()).find((s: any) => s.slug === slug);
+
+  if (!service) {
+    return {
+      title: 'Service Not Found',
+    };
+  }
+
+  const title = `${service.title} - TechFix-IT Ireland`;
+  const description = service.shortDescription || service.fullDescription.substring(0, 160);
+  const imageUrl = service.imageUrl || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop';
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [imageUrl],
+      type: 'website',
+    },
+  };
+}
+
 export default async function ServicePage({ params }: ServicePageProps) {
   const { slug } = await params;
   const service = (await getServices()).find((s : any) => s.slug === slug);
@@ -34,8 +59,31 @@ export default async function ServicePage({ params }: ServicePageProps) {
   // Use DB image if available, otherwise fallback
   const bgImage = service.imageUrl || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop';
   
+  // JSON-LD Structured Data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.title,
+    description: service.shortDescription,
+    provider: {
+      '@type': 'Organization',
+      name: 'TechFix-IT',
+      url: 'https://www.techfix-it.ie'
+    },
+    areaServed: {
+      '@type': 'Country',
+      name: 'Ireland'
+    },
+    image: bgImage,
+    url: `https://www.techfix-it.ie/services/${service.slug}`
+  };
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
       <PageHeader title={service.title} subtitle="Professional solutions tailored to your business goals." />
       
@@ -45,6 +93,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
           <div className={styles.content}>
             <div 
               className={styles.imagePlaceholder} 
+              role="img"
+              aria-label={service.title}
+              title={service.title}
               style={{ 
                 backgroundImage: `url('${bgImage}')`, 
                 backgroundSize: 'cover', 
