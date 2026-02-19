@@ -5,6 +5,8 @@ import styles from '@/components/layout/Legal.module.css';
 import { getLegalPages } from '@/lib/db';
 import MarkdownView from '@/components/common/MarkdownView';
 
+export const revalidate = 0; // Force dynamic rendering to show updates immediately
+
 export default async function TermsOfService() {
   const pages = await getLegalPages();
   const page = pages.find((p: any) => p.slug === 'terms-of-service') || { title: 'Terms of Service', content: 'Content not found.', last_updated: new Date().toISOString() };
