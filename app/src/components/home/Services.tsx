@@ -6,6 +6,7 @@ import * as Icons from 'lucide-react';
 
 export default async function Services() {
   const services = await getServices();
+  
 
   return (
     <section className={styles.services}>
